@@ -1,3 +1,20 @@
+apiVersion: v1
+data:
+  hello.sh: |-
+    #!/bin/sh -e
+    echo "Will wait for 100 times"
+    i=1; while [ ${i} -le 10 ]; do
+    echo "Wait ${i}"
+    sleep 2
+    i=$(( i + 1 ))
+    done
+    echo "Done"
+kind: ConfigMap
+metadata:
+  name: scripts
+
+---
+
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -8,5 +25,14 @@ spec:
       containers:
       - name: busybox
         image: busybox
-        command: ["echo",  "Hello World!"]
+        command: ["./scripts/hello.sh"]
+        volumeMounts:
+          - name: "scripts"
+            mountPath: "./scripts/hello.sh"
+            subPath: "hello.sh"
       restartPolicy: Never
+      volumes:
+        - name: "scripts"
+          configMap:
+            name: "scripts"
+            defaultMode: 0777
