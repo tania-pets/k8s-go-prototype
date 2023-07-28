@@ -8,6 +8,9 @@ import (
 	"path/filepath"
 )
 
+// TODO pass this to context and define in main?
+var clientSet = Getk8sClient()
+
 func Getk8sClient() *kubernetes.Clientset {
 	home, exists := os.LookupEnv("HOME")
 	if !exists {
